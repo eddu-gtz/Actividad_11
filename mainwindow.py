@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem
 #Decorador que se llama cuando se ejecute la aplicacion
 from PySide2.QtCore import Slot
 #clase Vista
@@ -26,6 +26,9 @@ class MainWindow(QMainWindow):
         #Configuracion del menu
         self.ui.actionAbrir.triggered.connect(self.action_abrir_archivo)
         self.ui.actionGuardar.triggered.connect(self.action_guardar_archivo)
+        #configuracion de la tabla
+        self.ui.show_table_pushButton.clicked.connect(self.mostrar_tabla)
+        self.ui.search_pushButton.clicked.connect(self.buscar_particula)
 
     @Slot()
     def click_mostrar(self):
@@ -112,4 +115,92 @@ class MainWindow(QMainWindow):
                 self,
                 "Error",
                 "No se guardó el archivo" + ubicacion
+            )
+    
+    @Slot()
+    def mostrar_tabla(self):
+        self.ui.table.setColumnCount(10)
+        #Definir el titulo de las columnas
+        headers = ["Id", "Origen X", "Origen Y", "Destino X", "Destino Y", "Velocidad", "Red", "Blue", "Green", "Distancia"]
+        #Agregar los headers a la tabla
+        self.ui.table.setHorizontalHeaderLabels(headers)
+        #Agregar las filas en base a los registros almacenados
+        self.ui.table.setRowCount(len(self.administrador))
+        #contador para las filas
+        row = 0
+        for particula in self.administrador:
+            #Crear los widgets para insertar los elementos en la tabla
+            id_widget = QTableWidgetItem(str(particula.id))
+            origenx_widget = QTableWidgetItem(str(particula.origen_x))
+            origeny_widget = QTableWidgetItem(str(particula.origen_y))
+            destinox_widget = QTableWidgetItem(str(particula.destino_x))
+            destinoy_widget = QTableWidgetItem(str(particula.destino_y))
+            velocidad_widget = QTableWidgetItem(str(particula.velocidad))
+            red_widget = QTableWidgetItem(str(particula.red))
+            green_widget = QTableWidgetItem(str(particula.green))
+            blue_widget = QTableWidgetItem(str(particula.blue))
+            distancia_widget = QTableWidgetItem(str(particula.distancia))
+
+            #insertar el elemento en la fila y columna indicadas
+            self.ui.table.setItem(row, 0, id_widget)
+            self.ui.table.setItem(row, 1, origenx_widget)
+            self.ui.table.setItem(row, 2, origeny_widget)
+            self.ui.table.setItem(row, 3, destinox_widget)
+            self.ui.table.setItem(row, 4, destinoy_widget)
+            self.ui.table.setItem(row, 5, velocidad_widget)
+            self.ui.table.setItem(row, 6, red_widget)
+            self.ui.table.setItem(row, 7, green_widget)
+            self.ui.table.setItem(row, 8, blue_widget)
+            self.ui.table.setItem(row, 9, distancia_widget)
+
+            #Aumentar el contador de la fila
+            row += 1
+            
+
+
+    @Slot()
+    def buscar_particula(self):
+        #obtener el id a buscar
+        id_buscar = self.ui.search_id_lineEdit.text()
+        encontrado = False
+        for particula in self.administrador:
+            if id_buscar == str(particula.id):
+                #limpiar la tabla
+                self.ui.table.clear()
+                headers = ["Id", "Origen X", "Origen Y", "Destino X", "Destino Y", "Velocidad", "Red", "Blue", "Green", "Distancia"]
+                #Agregar los headers a la tabla
+                self.ui.table.setHorizontalHeaderLabels(headers)
+                self.ui.table.setRowCount(1)
+                #Crear los widgets para insertar los elementos en la tabla
+                id_widget = QTableWidgetItem(str(particula.id))
+                origenx_widget = QTableWidgetItem(str(particula.origen_x))
+                origeny_widget = QTableWidgetItem(str(particula.origen_y))
+                destinox_widget = QTableWidgetItem(str(particula.destino_x))
+                destinoy_widget = QTableWidgetItem(str(particula.destino_y))
+                velocidad_widget = QTableWidgetItem(str(particula.velocidad))
+                red_widget = QTableWidgetItem(str(particula.red))
+                green_widget = QTableWidgetItem(str(particula.green))
+                blue_widget = QTableWidgetItem(str(particula.blue))
+                distancia_widget = QTableWidgetItem(str(particula.distancia))
+
+                #insertar el elemento en la fila y columna indicadas
+                self.ui.table.setItem(0, 0, id_widget)
+                self.ui.table.setItem(0, 1, origenx_widget)
+                self.ui.table.setItem(0, 2, origeny_widget)
+                self.ui.table.setItem(0, 3, destinox_widget)
+                self.ui.table.setItem(0, 4, destinoy_widget)
+                self.ui.table.setItem(0, 5, velocidad_widget)
+                self.ui.table.setItem(0, 6, red_widget)
+                self.ui.table.setItem(0, 7, green_widget)
+                self.ui.table.setItem(0, 8, blue_widget)
+                self.ui.table.setItem(0, 9, distancia_widget)
+
+                encontrado = True
+                return
+        
+        if not encontrado:
+            QMessageBox.warning(
+                self,
+                "Atención",
+                f'La particula: "{id_buscar}" no fue encontrada'
             )

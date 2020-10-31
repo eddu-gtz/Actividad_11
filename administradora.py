@@ -40,4 +40,25 @@ class Administradora:
             return 1
         except:
             return 0
+    
+    def __len__(self):
+        return len(self.__particulas)
+    
+    #Crear un iterador
+    def __iter__(self):
+        #retorna el contador
+        self.cont = 0
+        return self
+
+    def __next__(self):
+        #siguiente elemento
+        if self.cont < len(self.__particulas):
+            #se guarda el elemento en la posicion que indique el contador
+            particula = self.__particulas[self.cont]
+            #antes de retornar se incrementa el contador
+            self.cont += 1
+            return particula
+        else:
+            #deja de continuar con el ciclo
+            raise StopIteration
         

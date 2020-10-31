@@ -31,5 +31,38 @@
           "red": 74,
           "green": 53,
           "blue": 78
+     },
+     {
+          "id": 4,
+          "origen_x": 125,
+          "origen_y": 125,
+          "destino_x": 123,
+          "destino_y": 156,
+          "velocidad": 100,
+          "red": 255,
+          "green": 255,
+          "blue": 255
+     },
+     {
+          "id": 5,
+          "origen_x": 120,
+          "origen_y": 131,
+          "destino_x": 117,
+          "destino_y": 161,
+          "velocidad": 125,
+          "red": 125,
+          "green": 125,
+          "blue": 125
+     },
+     {
+          "id": 6,
+          "origen_x": 145,
+          "origen_y": 136,
+          "destino_x": 478,
+          "destino_y": 265,
+          "velocidad": 120,
+          "red": 130,
+          "green": 120,
+          "blue": 120
      }
 ]

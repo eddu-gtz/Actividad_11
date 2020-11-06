@@ -1,4 +1,6 @@
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem
+from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QTableWidgetItem, QGraphicsScene
+#Importar las clases para poder dibujar en el Graphics view
+from PySide2.QtGui import QPen, QColor, QTransform
 #Decorador que se llama cuando se ejecute la aplicacion
 from PySide2.QtCore import Slot
 #clase Vista
@@ -19,7 +21,13 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         #Se incrustan las configuraciones de la clase
         self.ui.setupUi(self)
-        #Configurar el evento click del boton
+
+        #Objeto para la escena
+        self.scene = QGraphicsScene()
+        #Asignar la escena
+        self.ui.graphicsView.setScene(self.scene)
+
+        #Configurar los eventos click de los botones
         self.ui.agregar_final_pushButton.clicked.connect(self.click_agregar_final)
         self.ui.agregar_inicio_pushButton.clicked.connect(self.click_agregar_inicio)
         self.ui.mostrar_pushButton.clicked.connect(self.click_mostrar)
@@ -29,6 +37,9 @@ class MainWindow(QMainWindow):
         #configuracion de la tabla
         self.ui.show_table_pushButton.clicked.connect(self.mostrar_tabla)
         self.ui.search_pushButton.clicked.connect(self.buscar_particula)
+        #configuracion del Graphics view
+        self.ui.draw_pushButton.clicked.connect(self.dibujar)
+        self.ui.clean_drawing_pushButton.clicked.connect(self.limpiar_dibujo)
 
     @Slot()
     def click_mostrar(self):
@@ -92,8 +103,7 @@ class MainWindow(QMainWindow):
                 "Error",
                 "No se pudo abrir el archivo " + ubicacion
             )
-
-        
+ 
     @Slot()
     def action_guardar_archivo(self):
         ubicacion = QFileDialog.getSaveFileName(
@@ -156,8 +166,6 @@ class MainWindow(QMainWindow):
             #Aumentar el contador de la fila
             row += 1
             
-
-
     @Slot()
     def buscar_particula(self):
         #obtener el id a buscar
@@ -204,3 +212,38 @@ class MainWindow(QMainWindow):
                 "Atención",
                 f'La particula: "{id_buscar}" no fue encontrada'
             )
+
+    def wheelEvent(self, event):
+        #Evento para hacer zoom en la escena
+        if event.delta() > 0:
+            self.ui.graphicsView.scale(1.2, 1.2)
+        else:
+            self.ui.graphicsView.scale(0.8, 0.8)
+    
+    @Slot()
+    def dibujar(self):
+        #Definir una pluma
+        pen = QPen()
+        #Asignacion del ancho de la pluma
+        pen.setWidth(2)
+
+        for particula in self.administrador:
+            
+            #Obtener el color de la particula
+            r = particula.red
+            g = particula.green
+            b = particula.blue
+            color = QColor(r, g, b)
+            #Asignar el color a la pluma
+            pen.setColor(color)
+
+            self.scene.addEllipse(particula.origen_x, particula.origen_y, 3, 3, pen)
+            self.scene.addEllipse(particula.destino_x, particula.destino_y, 3, 3, pen)
+            self.scene.addLine(particula.origen_x+3, particula.origen_y+3, particula.destino_x, particula.destino_y, pen)
+
+    @Slot()
+    def limpiar_dibujo(self):
+        #Limpiar la escena
+        self.scene.clear()
+        #Reestablecer la escala al predeterminado
+        self.ui.graphicsView.setTransform(QTransform())
